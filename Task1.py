@@ -72,12 +72,15 @@ def task_1c():
     
     for bits in range(8, 51, 2):
         input1, input2, attempts, elapsed_time = find_collision(bits, 100000)
+        bits_list.append(bits)
         if input1 and input2:
-            bits_list.append(bits)
+            # bits_list.append(bits)
             time_list.append(elapsed_time)
             inputs_list.append(attempts)
             print(f"Collision found for {bits} bits: {input1} & {input2} in {elapsed_time:.2f}s after {attempts} attempts")
         else:
+            time_list.append(elapsed_time)
+            inputs_list.append(attempts)
             print(f"TIMEOUT: No collision found for {bits} bits after {attempts} attempts")
     
     # Plotting results
