@@ -1,6 +1,6 @@
 import random, string, time
 from Crypto.Hash import SHA256
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 #Function to calculate the SHA256 hash
 def sha256_hash(input_str):
@@ -35,6 +35,20 @@ def find_hamming_distance_1():
             return base, modified
     return None, None
 
+#Function to find collisions for truncated hashes
+def find_collision(bits, max_attempts):
+    seen = {}
+    start_time = time.time()
+    for attempt in range(1, max_attempts + 1):
+        s = ''.join(random.choices(string.ascii_letters, k = 10))
+        truncated_hash = truncate_hash(sha256_hash(s), bits)
+        if truncated_hash in seen:
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            return seen[truncated_hash], s, attempt, elapsed_time
+        else:
+            seen[truncated_hash] = s
+    return None, None, max_attempts, time.time() - start_time
 
 def task_1a():
     print("Task1a: SHA256 hashes of random inputs")
@@ -49,6 +63,40 @@ def task_1b():
             print(f"String 1: {str1}, Hash 1: {sha256_hash(str1)}")
             print(f"String 2: {str2}, Hash 2: {sha256_hash(str2)}\n")
 
+#Task 1c: Finding collisions for truncated hashes
+def task_1c():
+    print("Task 1c: Finding collisions for truncated hashes")
+    bits_list = []
+    time_list = []
+    inputs_list = []
+    
+    for bits in range(8, 51, 2):
+        input1, input2, attempts, elapsed_time = find_collision(bits, 10000)
+        if input1 and input2:
+            bits_list.append(bits)
+            time_list.append(elapsed_time)
+            inputs_list.append((input1, input2))
+            print(f"Collision found for {bits} bits: {input1} & {input2} in {elapsed_time:.2f}s after {attempts} attempts")
+        else:
+            print(f"TIMEOUT: No collision found for {bits} bits after {attempts} attempts")
+    
+    # Plotting results
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    plt.plot(bits_list, time_list, marker='o')
+    plt.title('Digest Size vs Collision Time')
+    plt.xlabel('Digest Size (bits)')
+    plt.ylabel('Time (seconds)')
+
+    plt.subplot(1, 2, 2)
+    plt.plot(bits_list, [len(inputs) for inputs in inputs_list], marker='o')
+    plt.title('Digest Size vs Number of Inputs')
+    plt.xlabel('Digest Size (bits)')
+    plt.ylabel('Number of Inputs')
+
+    plt.tight_layout()
+    plt.savefig('collision_analysis.png')
+    plt.show()
 
 # #Test: hash simple strings
 # inputs = ["example1", "example2", "example3"]
@@ -57,6 +105,7 @@ def task_1b():
 def main():
     task_1a()
     task_1b()
+    task_1c()
 
 if __name__ == "__main__":
     main()
