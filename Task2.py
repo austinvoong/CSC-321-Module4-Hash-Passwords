@@ -19,17 +19,14 @@ def crack_password(user_line):
     start_time = time.time()
 
     for password in filtered_words:
-        print(f"User: {username} {password}")
-
-        try:
-            if bcrypt.checkpw(password.encode('utf-8'), bcrypt_hash.encode('utf-8')):
-                end_time = time.time()
-                elapsed_time = end_time - start_time
-                print(f"Password for {username} cracked: {password} \n Elapsed time: {elapsed_time:.2f} seconds)")
-                return username, password, elapsed_time
-        except Exception as e:
-            print(f"Error, user: {username}, password: {password}: {str(e)}")
-        
+        # for testing:
+        # print(f"User: {username} {password}")
+        if bcrypt.checkpw(password.encode('utf-8'), bcrypt_hash.encode('utf-8')):
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"Password for {username} cracked: {password} \n Elapsed time: {elapsed_time:.2f} seconds)")
+            return username, password, elapsed_time
+       
     return username, None, None
 
 # Crack shadow file function
